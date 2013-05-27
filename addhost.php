@@ -3,7 +3,10 @@
 echo "CONFIGURADOR DE HOSTS APACHE\n";
 echo "by: EVALDO BARBOSA\n";
 
+$setPermissions = true;
 $apache_virtual_hosts_dir="/etc/apache2/sites-enabled";
+$user="evaldo";
+$group="www-data";
 
 function printmessage($message,$isError=false) {
 	$info = ( $isError )
@@ -38,10 +41,10 @@ if ( !preg_match("(^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)", $ip) ) {
 }
 
 if ( !file_exists($app_path) ) {
-	echo "CRIANDO DIRETÓRIO\n";
+	printmessage( "CRIANDO DIRETÓRIO" );
+	$setPermissions = true;
 	mkdir($app_path, 0775, true);
-	chown($app_path, "evaldo");
-	chgrp($app_path, "www-data");
+	$setPermissions = true;
 }
 
 $contents = file_get_contents("/etc/hosts");
@@ -52,10 +55,6 @@ $contents = file_get_contents("/etc/hosts");
 		);
 		die();
 	}
-
-	echo "CONFIGURANDO HOST\n";
-$contents .= "\n{$ip}\t{$server_name}";
-file_put_contents("/etc/hosts", $contents);
 
 echo "CONFIGURANDO VIRTUALHOST\n";
 $vhc = array(); //virtual_host_content
@@ -93,5 +92,20 @@ if ( in_array("--htaccess", $argv) ) {
 	file_put_contents("{$app_path}/.htaccess", implode("\n", $vhc));
 
 	printmessage( "SEU HTACCESS FOI CRIADO CORRETAMENTE" );
+}
+
+if ( $setPermissions ) {
+	echo "CONFIGURANDO PERMISSOES\n";
+	//Folder
+	chown(dirname($app_path), $user);
+	chgrp(dirname($app_path), $group);
+
+	//htaccess
+	chown("{$app_path}/.htaccess", $user);
+	chgrp("{$app_path}/.htaccess", $group);
+
+	echo "CONFIGURANDO HOST\n";
+	$contents .= "\n{$ip}\t{$server_name}";
+	file_put_contents("/etc/hosts", $contents);
 }
 ?>
