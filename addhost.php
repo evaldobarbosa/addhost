@@ -5,14 +5,37 @@ echo "by: EVALDO BARBOSA\n";
 
 $apache_virtual_hosts_dir="/etc/apache2/sites-enabled";
 
+function printmessage($message,$isError=false) {
+	$info = ( $isError )
+		? "ERROR"
+		: "OK";
+
+	echo "\n+======================================================================\n";
+	echo "| ADDHOST\n";
+	echo "| ---------------------------------------------------------------------\n";
+	echo "| [ $info ] {$message}\n";
+	echo "+======================================================================\n\n";
+}
+
 if ( count($argv) < 4 ) {
-	echo "Sao necessarios pelo menos tres parametros: IP, nome_do_servidor e diretorio_da_aplicacao";
+	printmessage(
+		"Sao necessarios pelo menos tres parametros: IP, nome_do_servidor e diretorio_da_aplicacao",
+		true
+	);
 	die();
 }
 
 $ip = $argv[1];
 $server_name = $argv[2];
 $app_path = $argv[3];
+
+if ( !preg_match("(^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)", $ip) ) {
+	printmessage(
+		"O primeiro parâmetro deve ser o IP da aplicação a ser configurado\n",
+		true
+	);
+	die();
+}
 
 if ( !file_exists($app_path) ) {
 	echo "CRIANDO DIRETÓRIO\n";
@@ -23,9 +46,13 @@ if ( !file_exists($app_path) ) {
 
 $contents = file_get_contents("/etc/hosts");
 	if ( strpos($contents, $ip) ) {
-		throw new Exception("O IP informado já encontra-se em uso. Escolha outro.", 1);
+		printmessage(
+			"O IP informado já encontra-se em uso. Escolha outro.",
+			true
+		);
 		die();
 	}
+
 	echo "CONFIGURANDO HOST\n";
 $contents .= "\n{$ip}\t{$server_name}";
 file_put_contents("/etc/hosts", $contents);
@@ -48,7 +75,7 @@ $vhc[] = "</VirtualHost>";
 
 file_put_contents("{$apache_virtual_hosts_dir}/{$server_name}.conf", implode("\n", $vhc));
 
-echo "SEU SERVIDOR FOI CRIADO CORRETAMENTE\n";
+printmessage( "SEU SERVIDOR FOI CRIADO CORRETAMENTE" );
 
 if ( in_array("--htaccess", $argv) ) {
 	echo "CONFIGURANDO HTACCESS\n";	
@@ -65,6 +92,6 @@ if ( in_array("--htaccess", $argv) ) {
 
 	file_put_contents("{$app_path}/.htaccess", implode("\n", $vhc));
 
-	echo "SEU HTACCESS FOI CRIADO CORRETAMENTE\n";
+	printmessage( "SEU HTACCESS FOI CRIADO CORRETAMENTE" );
 }
 ?>
