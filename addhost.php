@@ -4,11 +4,9 @@ echo "CONFIGURADOR DE HOSTS APACHE\n";
 echo "by: EVALDO BARBOSA\n";
 
 $apache_virtual_hosts_dir="/etc/apache2/sites-enabled";
-$project_owner="evaldo";
-$apache_user="www-data";
 
 if ( count($argv) < 4 ) {
-  echo "Sao necessarios pelo menos tres parametros: IP, nome_do_servidor e diretorio_da_aplicacao";
+	echo "Sao necessarios pelo menos tres parametros: IP, nome_do_servidor e diretorio_da_aplicacao";
 	die();
 }
 
@@ -19,8 +17,8 @@ $app_path = $argv[3];
 if ( !file_exists($app_path) ) {
 	echo "CRIANDO DIRETÓRIO\n";
 	mkdir($app_path, 0775, true);
-	chown($app_path, $project_owner);
-	chgrp($app_path, $apache_user);
+	chown($app_path, "evaldo");
+	chgrp($app_path, "www-data");
 }
 
 $contents = file_get_contents("/etc/hosts");
@@ -34,7 +32,7 @@ file_put_contents("/etc/hosts", $contents);
 
 echo "CONFIGURANDO VIRTUALHOST\n";
 $vhc = array(); //virtual_host_content
-$vhc[] = "### CREATED " . date("Y-m-d H:i:s") . "###";
+$vhc[] = "### CREATED BY ADDHOST: " . date("Y-m-d H:i:s") . "###";
 $vhc[] = "NameVirtualHost {$ip}:80";
 $vhc[] = "<VirtualHost {$ip}:80>";
 $vhc[] = "\tServerAdmin hostmaster@{$server_name}";
@@ -51,4 +49,22 @@ $vhc[] = "</VirtualHost>";
 file_put_contents("{$apache_virtual_hosts_dir}/{$server_name}.conf", implode("\n", $vhc));
 
 echo "SEU SERVIDOR FOI CRIADO CORRETAMENTE\n";
+
+if ( in_array("--htaccess", $argv) ) {
+	echo "CONFIGURANDO HTACCESS\n";	
+
+	$vhc = array(); //virtual_host_content
+	$vhc[] = "### CREATED BY ADDHOST: " . date("Y-m-d H:i:s") . "###";
+	$vhc[] = "Options +FollowSymlinks";
+	$vhc[] = "RewriteEngine On";
+
+	$vhc[] = "RewriteCond %{REQUEST_URI} !\.(gif|jpg|png)$";
+	$vhc[] = "RewriteCond %{REQUEST_FILENAME} !-f";
+	$vhc[] = "RewriteCond %{REQUEST_FILENAME} !-d";
+	$vhc[] = "RewriteRule (.*) /index.php [L]";
+
+	file_put_contents("{$app_path}/.htaccess", implode("\n", $vhc));
+
+	echo "SEU HTACCESS FOI CRIADO CORRETAMENTE\n";
+}
 ?>
