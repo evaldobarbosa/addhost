@@ -7,14 +7,16 @@ class AddHost {
 	private $folder;
 	private $folderCreated = false;
 	private $htaccessCreation = false;
+	private $composerDownload = false;
 	private $log = array();
 	private $rollback = array();
 
-	function __construct($ip,$hostname,$folder,$htacess = false) {
+	function __construct($ip,$hostname,$folder,$htacess = false, $composer = false) {
 		$this->setIP( $ip );
 		$this->setHostname($hostname);
 		$this->setFolder($folder);
 		$this->htaccessCreation = $htacess;
+		$this->composerDownload = $composer;
 	}
 
 	function setIP($value) {
@@ -107,7 +109,9 @@ class AddHost {
 	}
 
 	private function createHTAccess() {
-		$this->log['htaccess'] = "CONFIGURANDO HTACCESS\n";	
+		$this->log['htaccess'] = "CONFIGURANDO HTACCESS\n";
+
+		$path = "{$this->getPublicFolder()}/.htaccess";
 
 		$vhc = array(); //virtual_host_content
 		$vhc[] = "### CREATED BY ADDHOST: " . date("Y-m-d H:i:s") . "###";
@@ -119,7 +123,7 @@ class AddHost {
 		$vhc[] = "RewriteCond %{REQUEST_FILENAME} !-d";
 		$vhc[] = "RewriteRule (.*) /index.php [L]";
 
-		$f = file_put_contents("{$this->getPublicFolder()}/.htaccess", implode("\n", $vhc));
+		$f = file_put_contents($path, implode("\n", $vhc));
 
 		unset($vhc);
 
@@ -129,10 +133,49 @@ class AddHost {
 		}
 
 		//htaccess
-		chown("{$this->getPublicFolder()}/.htaccess", CURRENT_USER);
-		chgrp("{$this->getPublicFolder()}/.htaccess", APACHE_GROUP);
+		chown($path, CURRENT_USER);
+		chgrp($path, APACHE_GROUP);
 
 		$this->log['htaccess1'] = "SEU HTACCESS FOI CRIADO CORRETAMENTE";
+	}
+
+	private function downloadComposer() {
+		$url  = 'http://getcomposer.org/composer.phar';
+		$path = "{$this->folder}/composer.phar";
+
+		$this->log['composer'] = "DOWNLOAD DO COMPOSER\n";
+
+		$ch = curl_init($url);
+	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);	 
+	    $data = curl_exec($ch);
+	    curl_close($ch);	 
+
+		if ( !$data || !file_put_contents($path, $data) ) {
+			$this->rollback['composer'] = true;
+			throw new Exception("Erro no download do composer", 1);
+		}
+
+		//htaccess
+		chown($path, CURRENT_USER);
+		chgrp($path, APACHE_GROUP);
+		$this->log['composer1'] = "DOWNLOAD DO COMPOSER REALIZADO\n";
+
+		$this->log['composer2'] = "CRIANDO ARQUIVO composer.json PADRÃO";
+
+		$contents = array();
+		$contents[] = '{';
+    	$contents[] = '	"require-dev": {';
+        $contents[] = '	"phpunit/phpunit": "@stable"';
+    	$contents[] = '	},';
+    	$contents[] = '	"require": {';
+        $contents[] = '	"php": ">=5.4",';
+    	$contents[] = '	},';
+    	$contents[] = '	"config": { "bin-dir": "bin" }';
+		$contents[] = '}';
+
+		if ( !file_put_contents("{$this->folder}/composer.json", $contents) ) {
+			$this->log['composer'] = "ERRO AO CRIAR composer.json";
+		}
 	}
 
 	private function validateIP() {
@@ -154,6 +197,10 @@ class AddHost {
 
 			if ( $this->htaccessCreation ) {
 				$this->createHTAccess();
+			}
+
+			if ( $this->composerDownload ) {
+				$this->downloadComposer();
 			}
 
 			$filename = dirname( __FILE__ ). "/hosts.temp";
