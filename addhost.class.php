@@ -174,7 +174,7 @@ class AddHost {
     	$contents[] = '	"config": { "bin-dir": "bin" }';
 		$contents[] = '}';
 
-		if ( !file_put_contents("{$this->folder}/composer.json", $contents) ) {
+		if ( !file_put_contents("{$this->folder}/composer.json", implode("\n",$contents) ) ) {
 			$this->log['composer'] = "ERRO AO CRIAR composer.json";
 		}
 	}
@@ -207,14 +207,14 @@ class AddHost {
 			$filename = dirname( __FILE__ ). "/hosts.temp";
 			if ( file_exists($filename) ) {
 				copy( $filename, HOSTS_FILE );
-				unset( $filename );
+				unlink( $filename );
 				echo "ARQUIVOS COPIADOS\n";
 			}
 
 			return array("success"=>$this->log);
 		} catch ( Exception $e ) {
 			if ( isset($this->rollback['vhost']) ) {
-				unset( $this->rollback['vhost'] );
+				unlink( $this->rollback['vhost'] );
 			}
 
 			if ( isset($this->rollback['hosts']) ) {
@@ -224,12 +224,12 @@ class AddHost {
 
 			if ( isset($this->rollback['folder']) ) {
 				$public = $this->getPublicFolder();
-				unset( $public );
-				unset( $this->folder );
+				unlink( $public );
+				unlink( $this->folder );
 			}
 
 			if ( isset($this->rollback['htaccess']) ) {
-				unset( $this->rollback['htaccess'] );
+				unlink( $this->rollback['htaccess'] );
 			}
 
 			return array("error"=>$e->getMessage());
