@@ -166,12 +166,17 @@ class AddHost {
 		$contents = array();
 		$contents[] = '{';
     	$contents[] = '	"require-dev": {';
-        $contents[] = '	"phpunit/phpunit": "@stable"';
+        $contents[] = '		"phpunit/phpunit": "@stable"';
     	$contents[] = '	},';
     	$contents[] = '	"require": {';
-        $contents[] = '	"php": ">=5.4"';
+        $contents[] = '		"php": ">=5.4"';
     	$contents[] = '	},';
-    	$contents[] = '	"config": { "bin-dir": "bin" }';
+    	$contents[] = '	"config": { "bin-dir": "bin" },';
+		$contents[] = '	"autoload": {';
+		$contents[] = '		"psr-0": {';
+		$contents[] = '			"": "src"';
+		$contents[] = '		}';
+		$contents[] = '	}';
 		$contents[] = '}';
 
 		if ( !file_put_contents("{$this->folder}/composer.json", implode("\n",$contents) ) ) {
