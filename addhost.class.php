@@ -169,7 +169,7 @@ class AddHost {
         $contents[] = '	"phpunit/phpunit": "@stable"';
     	$contents[] = '	},';
     	$contents[] = '	"require": {';
-        $contents[] = '	"php": ">=5.4",';
+        $contents[] = '	"php": ">=5.4"';
     	$contents[] = '	},';
     	$contents[] = '	"config": { "bin-dir": "bin" }';
 		$contents[] = '}';
@@ -177,6 +177,9 @@ class AddHost {
 		if ( !file_put_contents("{$this->folder}/composer.json", implode("\n",$contents) ) ) {
 			$this->log['composer'] = "ERRO AO CRIAR composer.json";
 		}
+
+		chown("{$this->folder}/composer.json", CURRENT_USER);
+		chgrp("{$this->folder}/composer.json", APACHE_GROUP);
 	}
 
 	private function validateIP() {
