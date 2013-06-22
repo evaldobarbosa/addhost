@@ -85,6 +85,7 @@ class AddHost {
 
 		if ( !$f ) {
 			$this->rollback['hosts'] = true;
+			unlink($f);
 			throw new Exception("Erro ao adicionar host no arquivo", 1);			
 		}
 
@@ -449,7 +450,7 @@ class AddHost {
 			}
 
 			$filename = dirname( __FILE__ ). "/hosts.temp";
-			if ( file_exists(filename) ) {
+			if ( file_exists($filename) ) {
 				copy( $filename, HOSTS_FILE );
 				unset( $filename );
 				echo "ARQUIVOS COPIADOS\n";
@@ -462,9 +463,8 @@ class AddHost {
 			}
 
 			if ( isset($this->rollback['hosts']) ) {
-				$contents = file_get_contents(HOSTS_FILE);
-				$contents .= str_replace("\n{$ip}\t{$server_name}","",$contents);
-				$f = file_put_contents("/etc/hosts", $contents);
+				$filename = dirname( __FILE__ ). "/hosts.temp";
+				unlink($filename);
 			}
 
 			if ( isset($this->rollback['folder']) ) {
