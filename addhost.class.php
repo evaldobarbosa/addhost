@@ -8,15 +8,17 @@ class AddHost {
 	private $folderCreated = false;
 	private $htaccessCreation = false;
 	private $composerDownload = false;
+	private $createErrorLog = false;
 	private $log = array();
 	private $rollback = array();
 
-	function __construct($ip,$hostname,$folder,$htacess = false, $composer = false) {
+	function __construct($ip,$hostname,$folder,$htacess = false,$composer = false,$errorlog = false) {
 		$this->setIP( $ip );
 		$this->setHostname($hostname);
 		$this->setFolder($folder);
 		$this->htaccessCreation = $htacess;
 		$this->composerDownload = $composer;
+		$this->createErrorLog = $errorlog;
 	}
 
 	function setIP($value) {
@@ -56,6 +58,11 @@ class AddHost {
 		$vhc[] = "\t\tOrder allow,deny";
 		$vhc[] = "\t\tAllow from all";
 		$vhc[] = "\t</Directory>";
+
+		if ( $this->createErrorLog ) {
+			$vhc[] = '\tErrorLog ${APACHE_LOG_DIR}/error.log';
+		}
+
 		$vhc[] = "</VirtualHost>";
 
 		$f = file_put_contents($filename, implode("\n", $vhc));
