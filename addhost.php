@@ -7,8 +7,9 @@ echo "by: EVALDO BARBOSA\n";
 
 $htaccess = ( in_array( '--htaccess', $argv) );
 $composer = ( in_array( '--composer', $argv) );
+$errorLog = ( in_array( '--errorlog', $argv) );
 
-$addhost = new AddHost( $argv[1], $argv[2], $argv[3],$htaccess,$composer);
+$addhost = new AddHost( $argv[1], $argv[2], $argv[3],$htaccess,$composer,$errorLog);
 
 $log = $addhost->run();
 
