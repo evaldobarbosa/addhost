@@ -2,20 +2,31 @@
 <?
 require("addhost.class.php");
 
-echo "CONFIGURADOR DE HOSTS APACHE\n";
+$lang = require( strtolower( LANGUAGE ) . '.lang.php' );
+
+echo $lang[ 'project_name' ], "\n";
 echo "by: EVALDO BARBOSA\n";
 
-$htaccess = ( in_array( '--htaccess', $argv) );
-$composer = ( in_array( '--composer', $argv) );
-$errorLog = ( in_array( '--errorlog', $argv) );
+$addhost = new AddHost( $argv[1], $argv[2] );
 
-$addhost = new AddHost( $argv[1], $argv[2], $argv[3],$htaccess,$composer,$errorLog);
+if ( !in_array( '--removehost', $argv) ) {
 
-$log = $addhost->run();
+	$addhost->setFolder( $argv[3] );
+	$addhost->setHTAccessOn( in_array( '--htaccess', $argv) );
+	$addhost->setComposerDownloadOn( in_array( '--composer', $argv) );
+	$addhost->setErrorLogOn( in_array( '--errorlog', $argv) );
 
-if ( isset($log['success'])  ) {
+	$log = $addhost->run();
+
+} else {
+
+	$log = $addhost->removeHost();
+
+}
+
+if ( isset($log['success']) && count($log['success']) ) {
 	echo "\n===================\n";
-	echo "| SUCCESS (ADDHOST)\n";
+	echo "| {$lang['success']} (ADDHOST)\n";
 	
 	foreach ($log['success'] as $key => $value) {
 		echo "| {$value}\n";
@@ -23,9 +34,15 @@ if ( isset($log['success'])  ) {
 	
 	echo "===================\n";
 
-} else {
+}
+
+if ( isset($log['error']) && count($log['error']) ) {
 	echo "\n===================\n";
-	echo "| ERROR - ( ADDHOST )\n";
-	echo "| {$log['error']}\n";
+	echo "| {$lang['error']} ( ADDHOST )\n";
+
+	foreach ($log['error'] as $key => $value) {
+		echo "| {$value}\n";
+	}
+
 	echo "===================\n";
 }
