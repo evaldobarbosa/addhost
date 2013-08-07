@@ -3,10 +3,14 @@
 PHP Script to create apache virtual hosts using command line.
 
 #### Use:
-> sudo path_to/addhost IP DOMAIN PATH_TO_PROJECT_FOLDER [--htaccess] [--composer] [--errorlog]
+> sudo path_to/addhost.php IP DOMAIN PATH_TO_PROJECT_FOLDER [--htaccess] [--composer] [--errorlog]
+
+or 
+
+> sudo path_to/addhost.php IP DOMAIN --removehost
 
 #### Example:
-> sudo /opt/addhost/addhost.php 127.0.2.1 dev.localdomain /home/user/project
+> sudo path_to/addhost.php 127.0.2.1 dev.localdomain /home/user/project
 
 #### How happens?
 
@@ -29,5 +33,11 @@ Example: define('PROXY_HOST','192.168.0.15:3128');
 ###### PROXY_USER: Here you should write the proxy user and password separated by ':'.
 
 Example: define('PROXY_USER','evaldobarbosa:myproxypassword');
+
+#### Addhost remove older hosts?
+The answer is Yes! See below the syntax to remove hosts.
+> sudo path_to/addhost.php 127.0.2.1 dev.localdomain --removehost
+
+#### After all...
 
 Restart apache.
