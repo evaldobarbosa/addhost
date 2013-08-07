@@ -9,3 +9,8 @@ define("HOSTS_FILE","/etc/hosts");
 
 //define("PROXY_HOST",'proxy.host.com.br:3128');
 //define("PROXY_USER",'evaldobarbosa:myproxypassword');
+
+define("LANGUAGE",'pt_BR');
+//define("language",'en_US');
+
+$language = array();
