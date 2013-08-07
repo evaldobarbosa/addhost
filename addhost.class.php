@@ -101,7 +101,7 @@ class AddHost {
 		}
 
 		$contents .= $hostname;
-		$f = file_put_contents( dirname(__FILE__ ). "/hosts.temp" , $contents);
+		$f = file_put_contents( dirname(__FILE__ ). "/hosts.temp" , trim($contents) );
 
 		if ( !$f ) {
 			$this->rollback['hosts'] = true;
