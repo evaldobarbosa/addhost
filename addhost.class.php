@@ -147,14 +147,30 @@ class AddHost {
 		$this->log['htaccess1'] = "SEU HTACCESS FOI CRIADO CORRETAMENTE";
 	}
 
+	private function &getCurlInstance($url) {
+		$ch = curl_init($url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 0);
+
+		if ( defined('PROXY_HOST') ) {
+				curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 0);
+				//curl_setopt($ch, CURLOPT_PROXYPORT, $p['port']);
+				curl_setopt($ch, CURLOPT_PROXY, PROXY_HOST);
+		}
+		if ( defined("PROXY_USER") ) {
+			curl_setopt($ch, CURLOPT_PROXYUSERPWD, PROXY_USER);
+		}
+
+		return $ch;
+	}
+
 	private function downloadComposer() {
 		$url  = 'http://getcomposer.org/composer.phar';
 		$path = "{$this->folder}/composer.phar";
 
 		$this->log['composer'] = "DOWNLOAD DO COMPOSER\n";
 
-		$ch = curl_init($url);
-	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);	 
+		$ch = $this->getCurlInstance($url);
 	    $data = curl_exec($ch);
 	    curl_close($ch);	 
 
