@@ -276,7 +276,7 @@ class AddHost {
 				unlink( $this->rollback['htaccess'] );
 			}
 
-			return array("error"=>$e->getMessage());
+			return array("error"=>array('error'=>$e->getMessage()));
 		}
 	}
 
@@ -308,10 +308,10 @@ class AddHost {
 
 			$vhost_file = APACHE_VHOST_PATH . "/{$this->hostname}.conf";
 			if ( file_exists( $vhost_file ) ) {
-				preg_match_all("(DocumentRoot (.*)/public)", file_get_contents( $host_file ), $matches);
+				preg_match_all("(DocumentRoot (.*)/public)", file_get_contents( $vhost_file ), $matches);
 
-				if ( isset($matches[0][1]) ) {
-					$projectFolderPath = $matches[0][1];
+				if ( isset($matches[1][0]) ) {
+					$projectFolderPath = $matches[1][0];
 				}
 
 				if ( unlink($vhost_file) ) {
@@ -328,7 +328,9 @@ class AddHost {
 				$log['error']['folder'] = $this->lang['folder_remove_manually'];
 			} else if ( file_exists($projectFolderPath) ) {
 
-				if ( unlink( $projectFolderPath ) ) {
+				$this->removeFolder( $projectFolderPath );
+
+				if ( !file_exists( $projectFolderPath ) ) {
 					$log['success']['folder'] = $this->lang['folder_remove_success'];
 				} else {
 					$log['error']['folder'] = $this->lang['folder_remove_error'];
@@ -355,5 +357,23 @@ class AddHost {
 		}
 
 		return $log;
+	}
+
+	private function removeFolder($dir) {
+	    $it = new RecursiveDirectoryIterator($dir);
+
+	    $it = new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST);
+
+	    foreach($it as $file) {
+	        if ('.' === $file->getBasename() || '..' ===  $file->getBasename()) continue;
+
+	        if ($file->isDir()) {
+	        	$this->removeFolder($file->getPathname());
+	        } else {
+	        	unlink($file->getPathname());
+	        }
+	    }
+
+	    rmdir($dir);
 	}
 }
