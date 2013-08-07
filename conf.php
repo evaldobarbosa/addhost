@@ -11,4 +11,5 @@ define("HOSTS_FILE","/etc/hosts");
 //define("PROXY_USER",'evaldobarbosa:myproxypassword');
 
 define("LANGUAGE",'pt_BR');
+define("LANGUAGE",'de_DE');
 //define("language",'en_US');
