@@ -73,7 +73,7 @@ class AddHost {
 		$vhc[] = "\t</Directory>";
 
 		if ( $this->createErrorLog ) {
-			$vhc[] = '\tErrorLog ${APACHE_LOG_DIR}/error.log';
+			$vhc[] = "\tErrorLog ${APACHE_LOG_DIR}/error.log";
 		}
 
 		$vhc[] = "</VirtualHost>";
