@@ -2,7 +2,7 @@
 require "conf.php";
 
 class AddHost {
-  private $ip;
+ 	private $ip;
 	private $hostname;
 	private $folder;
 	private $folderCreated = false;
@@ -11,14 +11,15 @@ class AddHost {
 	private $createErrorLog = false;
 	private $log = array();
 	private $rollback = array();
+	private $lang = array();
 
-	function __construct($ip,$hostname,$folder,$htacess = false,$composer = false,$errorlog = false) {
+	function __construct($ip,$hostname) {
 		$this->setIP( $ip );
 		$this->setHostname($hostname);
-		$this->setFolder($folder);
-		$this->htaccessCreation = $htacess;
-		$this->composerDownload = $composer;
-		$this->createErrorLog = $errorlog;
+
+		$language_file = __DIR__ . '/' . strtolower( LANGUAGE ) . '.lang.php';
+
+		$this->lang = require( $language_file );
 	}
 
 	function setIP($value) {
@@ -37,16 +38,28 @@ class AddHost {
 		return "{$this->folder}/public";
 	}
 
+	function setHTAccessOn($value) {
+		$this->htaccessCreation = $value;
+	}
+
+	function setComposerDownloadOn($value) {
+		$this->composerDownload = $value;
+	}
+
+	function setErrorLogOn($value) {
+		$this->createErrorLog = $value;
+	}
+
 	private function createVHost() {
 		$filename = APACHE_VHOST_PATH . "/" . strtolower($this->hostname) . ".conf";
 		if ( file_exists($filename) ) {
-			throw new Exception("VHost já configurado", 1);
+			throw new Exception($this->lang['vhost_exists'], 1);
 		}
 
-		$this->log['vhost'] = "CONFIGURANDO VIRTUALHOST";
+		$this->log['vhost'] = $this->lang['vhost_config'];
 
 		$vhc = array(); //virtual_host_content
-		$vhc[] = "### CREATED BY ADDHOST: " . date("Y-m-d H:i:s") . "###";
+		$vhc[] = "### {$this->lang['created_by']} ADDHOST: " . date("Y-m-d H:i:s") . "###";
 		$vhc[] = "NameVirtualHost {$this->ip}:80";
 		$vhc[] = "<VirtualHost {$this->ip}:80>";
 		$vhc[] = "\tServerAdmin hostmaster@{$this->hostname}";
@@ -71,12 +84,12 @@ class AddHost {
 
 		if ( !$f ) {
 			$this->rollback['vhost'] = $filename;
-			throw new Exception("Erro ao criar arquivo de vhost", 1);
+			throw new Exception( $this->lang['vhost_create_error'], 1);
 		}
 	}
 
 	private function appendHostName() {
-		$this->log['hostname'] = "CONFIGURANDO HOST";
+		$this->log['hostname'] = $this->lang['host_config'];
 
 		$contents = file_get_contents(HOSTS_FILE);
 		$hostname .= "\n{$this->ip}\t{$this->hostname}";
@@ -84,7 +97,7 @@ class AddHost {
 		$pos = strpos($contents, "\t{$this->hostname}");
 		if ( $pos === true ) {
 			$this->rollback['hosts'] = true;
-			throw new Exception("Erro ao adicionar host no arquivo", 1);
+			throw new Exception( $this->lang['host_add_name_error'], 1 );
 		}
 
 		$contents .= $hostname;
@@ -93,10 +106,10 @@ class AddHost {
 		if ( !$f ) {
 			$this->rollback['hosts'] = true;
 			unlink($f);
-			throw new Exception("Erro ao adicionar host no arquivo", 1);			
+			throw new Exception( $this->lang['host_addname_error'], 1 );			
 		}
 
-		$this->log['hostname1'] = "HOSTNAME CONFIGURADO";
+		$this->log['hostname1'] = $this->lang['host_success'];
 	}
 
 	private function createFolder() {
@@ -112,17 +125,17 @@ class AddHost {
 
 		if ( !$f1 || !$f2 || !$f3 || !$p1 || !$p2 || !$p3 ) {
 			$this->rollback['folder'] = true;
-			throw new Exception("Erro ao criar pastas do host", 1);			
+			throw new Exception( $this->lang['folder_create_error'], 1 );			
 		}
 	}
 
 	private function createHTAccess() {
-		$this->log['htaccess'] = "CONFIGURANDO HTACCESS\n";
+		$this->log['htaccess'] = $this->lang['htaccess_label'];
 
 		$path = "{$this->getPublicFolder()}/.htaccess";
 
 		$vhc = array(); //virtual_host_content
-		$vhc[] = "### CREATED BY ADDHOST: " . date("Y-m-d H:i:s") . "###";
+		$vhc[] = "### {$this->lang['created_by']} ADDHOST: " . date("Y-m-d H:i:s") . "###";
 		$vhc[] = "Options +FollowSymlinks";
 		$vhc[] = "RewriteEngine On";
 
@@ -137,14 +150,14 @@ class AddHost {
 
 		if ( !$f ) {
 			$this->rollback['htaccess'] = true;
-			throw new Exception("Erro ao criar htaccess", 1);
+			throw new Exception($this->lang['htaccess_create_error'], 1);
 		}
 
 		//htaccess
 		chown($path, CURRENT_USER);
 		chgrp($path, APACHE_GROUP);
 
-		$this->log['htaccess1'] = "SEU HTACCESS FOI CRIADO CORRETAMENTE";
+		$this->log['htaccess1'] = $this->lang['htaccess_success'];
 	}
 
 	private function &getCurlInstance($url) {
@@ -168,7 +181,7 @@ class AddHost {
 		$url  = 'http://getcomposer.org/composer.phar';
 		$path = "{$this->folder}/composer.phar";
 
-		$this->log['composer'] = "DOWNLOAD DO COMPOSER\n";
+		$this->log['composer'] = $this->lang['composer_download'];
 
 		$ch = $this->getCurlInstance($url);
 	    $data = curl_exec($ch);
@@ -176,15 +189,15 @@ class AddHost {
 
 		if ( !$data || !file_put_contents($path, $data) ) {
 			$this->rollback['composer'] = true;
-			throw new Exception("Erro no download do composer", 1);
+			throw new Exception( $this->lang['composer_dl_error'], 1);
 		}
 
 		//htaccess
 		chown($path, CURRENT_USER);
 		chgrp($path, APACHE_GROUP);
-		$this->log['composer1'] = "DOWNLOAD DO COMPOSER REALIZADO\n";
+		$this->log['composer1'] = $this->lang['composer_success'];
 
-		$this->log['composer2'] = "CRIANDO ARQUIVO composer.json PADRÃO";
+		$this->log['composer2'] = $this->lang['composer_json_ok'];
 
 		$contents = array();
 		$contents[] = '{';
@@ -203,7 +216,7 @@ class AddHost {
 		$contents[] = '}';
 
 		if ( !file_put_contents("{$this->folder}/composer.json", implode("\n",$contents) ) ) {
-			$this->log['composer'] = "ERRO AO CRIAR composer.json";
+			$this->log['composer'] = $this->lang['composer_json_error'];
 		}
 
 		chown("{$this->folder}/composer.json", CURRENT_USER);
@@ -212,7 +225,7 @@ class AddHost {
 
 	private function validateIP() {
 		if ( !preg_match("(^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)", $this->ip) ) {
-			throw new Exception("O primeiro parâmetro deve ser o IP da aplicação a ser configurado");
+			throw new Exception( $this->lang['param_first_error'] );
 		}
 	}
 
@@ -239,7 +252,7 @@ class AddHost {
 			if ( file_exists($filename) ) {
 				copy( $filename, HOSTS_FILE );
 				unlink( $filename );
-				echo "ARQUIVOS COPIADOS\n";
+				echo $this->lang['copy_file'], "\n";
 			}
 
 			return array("success"=>$this->log);
@@ -265,5 +278,82 @@ class AddHost {
 
 			return array("error"=>$e->getMessage());
 		}
+	}
+
+	function removeHost() {
+		$hosts = file_get_contents(HOSTS_FILE);
+
+		$matches = array();
+		preg_match_all("({$this->ip}(.*?){$this->hostname})", $hosts, $matches);
+
+		$log = array(
+			'success'	=> array(
+			),
+			'error'		=> array(
+			)
+		);
+
+		try {
+			$projectFolderPath		= null;
+
+			if ( count($matches) > 0 ) {
+
+				$hosts = str_replace($matches[0][0], "", $hosts);
+				file_put_contents(HOSTS_FILE, $hosts);
+				$log['success']['host'] = $this->lang['host_remove_success'];
+
+			} else {
+				$log['error']['host'] = $this->lang['host_remove_ip_error'];
+			}
+
+			$vhost_file = APACHE_VHOST_PATH . "/{$this->hostname}.conf";
+			if ( file_exists( $vhost_file ) ) {
+				preg_match_all("(DocumentRoot (.*)/public)", file_get_contents( $host_file ), $matches);
+
+				if ( isset($matches[0][1]) ) {
+					$projectFolderPath = $matches[0][1];
+				}
+
+				if ( unlink($vhost_file) ) {
+					$log['success']['vhost'] = $this->lang['vhost_remove_success'];
+				} else {
+					$log['success']['vhost'] = $this->lang['vhost_remove_error'];
+				}
+
+			} else {
+				$log['error']['vhost'] = $this->lang['vhost_not_found'];
+			}
+
+			if ( is_null($projectFolderPath) ) {
+				$log['error']['folder'] = $this->lang['folder_remove_manually'];
+			} else if ( file_exists($projectFolderPath) ) {
+
+				if ( unlink( $projectFolderPath ) ) {
+					$log['success']['folder'] = $this->lang['folder_remove_success'];
+				} else {
+					$log['error']['folder'] = $this->lang['folder_remove_error'];
+				}
+
+			} else {
+				$log['error']['folder'] = $this->lang['folder_not_found'];
+			}
+
+		} catch (Exceptionb $e) {
+			$log["error"]['unknown'] = $e->getMessage();
+		}
+
+		foreach ($log['success'] as $key => $value) {
+			if ( is_null( $value ) ) {
+				unset($log['success'][$key]);
+			}
+		}
+
+		foreach ($log['error'] as $key => $value) {
+			if ( is_null( $value ) ) {
+				unset($log['error'][$key]);
+			}
+		}
+
+		return $log;
 	}
 }
