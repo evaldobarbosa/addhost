@@ -12,5 +12,3 @@ define("HOSTS_FILE","/etc/hosts");
 
 define("LANGUAGE",'pt_BR');
 //define("language",'en_US');
-
-$language = array();
