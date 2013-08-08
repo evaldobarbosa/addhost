@@ -47,5 +47,6 @@ return array(
 	'composer_dl_error'			=> 'Erro no download do composer',
 	'composer_success'			=> 'DOWNLOAD DO COMPOSER REALIZADO',
 	'composer_json_success'		=> 'CRIANDO ARQUIVO composer.json PADRÃO',
-	'composer_json_error'		=> 'ERRO AO CRIAR composer.json'
+	'composer_json_error'		=> 'ERRO AO CRIAR composer.json',
+	'composer_licence_warn'		=> 'Reveja a licença em composer.json'
 );
