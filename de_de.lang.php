@@ -15,7 +15,7 @@
 *
 ********************************************************************************************************/
 return array(
-  'project_name' => 'APACHE HOSTS KONFUGURATION',
+	'project_name' => 'APACHE HOSTS KONFUGURATION',
 	'success' => 'Erfolg',
 	'error' => 'FEHLER',
 	'created_by' => 'ERSTELLT VON',
@@ -49,4 +49,5 @@ return array(
 	'composer_success' => 'Herunterladen des Composers abgeschlossen',
 	'composer_json_success' => 'Die Standarddatei composer.json wurde erstellt',
 	'composer_json_error' => 'Fehler beim Erstellden der composer.json-Datei'
+	'composer_license_warn' => 'Lesen Sie die Lizenzvereinbarung composer.json'
 );
