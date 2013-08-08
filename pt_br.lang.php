@@ -1,6 +1,20 @@
 <?
+/********************************************************************************************************
+*
+* Languagefile for
+* PHP Add Apache Virtual Host (class)
+* by Evaldo Barbosa
+*
+* @source = http://www.phpclasses.org/package/8114-PHP-Add-a-virtual-host-to-Apache-configuration.html
+*
+* BRAZILIAN PORTUGUESE TRANSLATION BY
+*
+* @name = Evaldo Barbosa
+* @mail = evaldobarbosa@gmail.com
+*
+********************************************************************************************************/
 return array(
-  'project_name'				=> 'CONFIGURADOR DE HOSTS APACHE',
+	'project_name'				=> 'CONFIGURADOR DE HOSTS APACHE',
 	'success'					=> 'SUCESSO',
 	'error'						=> 'ERRO',
 	'created_by'				=> 'CREATED BY',
