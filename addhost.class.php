@@ -201,6 +201,9 @@ class AddHost {
 
 		$contents = array();
 		$contents[] = '{';
+		$contents[] = '	"name": "{$this->folder}/{$this->folder}"';
+		$contents[] = '	"description": "Type your description to {$this->folder}"';
+		$contents[] = '	"license": "LGPL-3.0+"';
     	$contents[] = '	"require-dev": {';
         $contents[] = '		"phpunit/phpunit": "@stable"';
     	$contents[] = '	},';
@@ -217,6 +220,7 @@ class AddHost {
 
 		if ( !file_put_contents("{$this->folder}/composer.json", implode("\n",$contents) ) ) {
 			$this->log['composer'] = $this->lang['composer_json_error'];
+			$this->log['warning'] = $this->lang['composer_licence_warn'];
 		}
 
 		chown("{$this->folder}/composer.json", CURRENT_USER);
