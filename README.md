@@ -40,3 +40,7 @@ Yes! See below for the syntax to remove old hosts.
 #### Finally...
 
 Restart apache.
+
+Article (brazilian portuguese)
+---
+http://www.php-df.org/novidades/criar-novos-virtual-hosts-no-apache/
