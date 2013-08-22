@@ -43,4 +43,4 @@ Restart apache.
 
 Article (brazilian portuguese)
 ---
-http://www.php-df.org/novidades/criar-novos-virtual-hosts-no-apache/
+http://bit.ly/19zPh3A
