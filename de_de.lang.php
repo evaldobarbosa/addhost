@@ -18,6 +18,7 @@ return array(
 	'project_name' => 'APACHE HOSTS KONFUGURATION',
 	'success' => 'Erfolg',
 	'error' => 'FEHLER',
+	'alert'		=> 'WARNUNG',
 	'created_by' => 'ERSTELLT VON',
 	'copy_file' => 'Dateien kopieren',
 	'param_first_error' => 'Zuerst muss die IP Adresse der Anwendung konfiguriert werden',
@@ -33,6 +34,9 @@ return array(
 	'host_add_name_error' => 'Fehler beim Hinzufügen der Hostdatei',
 	'host_success' => 'Hostdatei wurde konfiguriert',
 	'host_remove_ip_error' => 'Host oder IP nicht gefunden',
+	'host_ip_exists_alert'		=> 'Host / IP bereits vorhanden',
+	'host_exists_alert'			=> 'Host ist bereits vorhanden',
+	'host_not_exists_alert'		=> 'Host nicht existiert',
 
 	'folder_create_error' => 'Fehler beim Erstellen des/r Hostordner',
 	'folder_removed' => 'hostordner wurde entfernt',
