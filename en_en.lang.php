@@ -7,7 +7,7 @@
 *
 * @source = http://www.phpclasses.org/package/8114-PHP-Add-a-virtual-host-to-Apache-configuration.html
 *
-* ENGLISH TRANSLATION BY
+* BRAZILIAN PORTUGUESE TRANSLATION BY
 *
 * @name = Evaldo Barbosa
 * @mail = evaldobarbosa@gmail.com
@@ -33,6 +33,9 @@ return array(
 	'host_add_name_error'		=> 'Error while adding host name',
 	'host_success'				=> 'HOSTNAME SETTED',
 	'host_remove_ip_error'		=> 'Host or IP not found',
+	'host_ip_exists_alert'		=> 'Host/IP already exists',
+	'host_exists_alert'			=> 'Host already exists',
+	'host_not_exists_alert'		=> 'Host not exists',
 
 	'folder_create_error'		=> 'Error while creating project folder',
 	'folder_removed'			=> 'Host removed',
