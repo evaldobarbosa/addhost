@@ -73,7 +73,7 @@ class AddHost {
 		$vhc[] = "\t</Directory>";
 
 		if ( $this->createErrorLog ) {
-			$vhc[] = "\tErrorLog ${APACHE_LOG_DIR}/error.log";
+			$vhc[] = "\tErrorLog $\{APACHE_LOG_DIR\}/{$this->hostname}.log";
 		}
 
 		$vhc[] = "</VirtualHost>";
@@ -199,10 +199,18 @@ class AddHost {
 
 		$this->log['composer2'] = $this->lang['composer_json_ok'];
 
+		$developerName = ( defined('DEVELOPER_NAME') )
+			? DEVELOPER_NAME
+			: 'Your name';
+
+		$developerMail = ( defined('DEVELOPER_MAIL') )
+			? DEVELOPER_MAIL
+			: 'your-dev@mail.net';
+
 		$contents = array();
 		$contents[] = '{';
-		$contents[] = '	"name": "{$this->folder}/{$this->folder}"';
-		$contents[] = '	"description": "Type your description to {$this->folder}"';
+		$contents[] = '	"name": "' . $this->folder . '/' . $this->folder;
+		$contents[] = '	"description": "Type your description to ' . $this->folder;
 		$contents[] = '	"license": "LGPL-3.0+"';
     	$contents[] = '	"require-dev": {';
         $contents[] = '		"phpunit/phpunit": "@stable"';
@@ -216,6 +224,12 @@ class AddHost {
 		$contents[] = '			"": "src"';
 		$contents[] = '		}';
 		$contents[] = '	}';
+		$contents[] = '	"authors": [';
+        $contents[] = '		{';
+        $contents[] = '			"name": "' . $developerName . '",';
+        $contents[] = '			"email": "' . $developerMail . '"';
+        $contents[] = '		}';
+        $contents[] = '	]';
 		$contents[] = '}';
 
 		if ( !file_put_contents("{$this->folder}/composer.json", implode("\n",$contents) ) ) {
@@ -282,6 +296,26 @@ class AddHost {
 
 			return array("error"=>array('error'=>$e->getMessage()));
 		}
+	}
+
+	function checkHost() {
+		$hosts = file_get_contents(HOSTS_FILE);
+
+		$matches = array();
+		preg_match_all("({$this->ip}|{$this->hostname})", $hosts, $matches);
+			$matches = $matches[0];
+		
+		$log = array('alert'=>array());
+
+		if ( in_array($this->ip, $matches) && in_array($this->hostname, $matches) ) {
+			$log['alert']['host_exists'] = $this->lang['host_ip_exists_alert'];
+		} else if ( in_array($this->hostname, $matches) ) {
+			$log['alert']['host_exists'] = $this->lang['host_exists_alert'];
+		} else {
+			$log['alert']['host_not_exists'] = $this->lang['host_not_exists_alert'] . ' (' . HOSTS_FILE . ')';
+		}
+
+		return $log;
 	}
 
 	function removeHost() {
