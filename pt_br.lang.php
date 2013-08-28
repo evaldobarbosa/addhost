@@ -17,6 +17,7 @@ return array(
 	'project_name'				=> 'CONFIGURADOR DE HOSTS APACHE',
 	'success'					=> 'SUCESSO',
 	'error'						=> 'ERRO',
+	'alert'						=> 'AVISO',
 	'created_by'				=> 'CREATED BY',
 	'copy_file'					=> 'ARQUIVOS COPIADOS',
 	'param_first_error'			=> 'O primeiro parâmetro deve ser o IP da aplicação a ser configurado',
@@ -32,6 +33,9 @@ return array(
 	'host_add_name_error'		=> 'Erro ao adicionar host no arquivo',
 	'host_success'				=> 'HOSTNAME CONFIGURADO',
 	'host_remove_ip_error'		=> 'Host ou IP não encontrados',
+	'host_ip_exists_alert'		=> 'O Host/IP já existe',
+	'host_exists_alert'			=> 'O Host já existe',
+	'host_not_exists_alert'		=> 'O Host não foi encontrado',
 
 	'folder_create_error'		=> 'Erro ao criar pastas do host',
 	'folder_removed'			=> 'Host removido',
