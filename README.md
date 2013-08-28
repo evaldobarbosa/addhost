@@ -9,6 +9,10 @@ or
 
 > sudo path_to/addhost.php IP DOMAIN --removehost
 
+or
+
+> sudo path_to/addhost.php IP DOMAIN --checkhost
+
 #### Example:
 > sudo path_to/addhost.php 127.0.2.1 dev.localdomain /home/user/project
 
