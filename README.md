@@ -1,6 +1,6 @@
 # Add Virtualhosts Tool
 
-PHP Script to create Spache virtual hosts (VHost) using the command line.
+PHP Script to create Apache virtual hosts (VHost) using the command line.
 
 #### Usage:
 > sudo path_to/addhost.php IP DOMAIN PATH_TO_PROJECT_FOLDER [--htaccess] [--composer] [--errorlog]
@@ -18,7 +18,7 @@ or
 
 #### How does this work?
 
-First addhost verifies if the project source folder exists, if not it is creatd. After that addhost
+First addhost verifies if the project source folder exists, if not it is created. After that addhost
 opens the /etc/hosts file and appends the IP and DOMAIN. Finally the virtual host config file is creates in the apache enabled sites folder.
 
 #### I want to configure something. What is possible?
