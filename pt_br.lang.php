@@ -42,6 +42,7 @@ return array(
 	'folder_not_found'			=> 'Pasta do projeto não encontrada',
 	'folder_remove_error'		=> 'Erro ao remover a pasta do projeto',
 	'folder_remove_manually'	=> 'Remova a pasta manualmente',
+	'folder_def_not_defined'	=> 'A pasta padrão de projetos não foi definida',
 
 	'htaccess_label'			=> 'CONFIGURANDO HTACCESS',
 	'htaccess_create_error'		=> 'Erro ao criar htaccess',
