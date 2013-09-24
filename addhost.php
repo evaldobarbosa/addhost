@@ -1,11 +1,5 @@
 #!/usr/bin/php -q
 <?
-//phpinfo();
-if (in_array("mod_rewrite",get_loaded_extensions())) {
-	echo "Esta instalado";
-	die();
-}
-
 require("addhost.class.php");
 
 $lang = require( strtolower( LANGUAGE ) . '.lang.php' );
@@ -29,6 +23,7 @@ if ( in_array( '--removehost', $argv ) ) {
 	$addhost->setHTAccessOn( in_array( '--htaccess', $argv) );
 	$addhost->setComposerDownloadOn( in_array( '--composer', $argv) );
 	$addhost->setErrorLogOn( in_array( '--errorlog', $argv) );
+	$addhost->setCNameOn( in_array( '--cname', $argv) );
 
 	$log = $addhost->run();
 
