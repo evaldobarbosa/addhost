@@ -23,6 +23,20 @@ class AddHost {
 		$this->lang = require( $language_file );
 	}
 
+	function writeConsoleHeader() {
+		$ar = array();
+		$ar[] = "   __    ____   ____   _   _  _____  ___  ____ ";
+		$ar[] = "  /__\  (  _ \ (  _ \ ( )_( )(  _  )/ __)(_  _)";
+		$ar[] = " /(__)\  )(_) ) )(_) ) ) _ (  )(_)( \__ \  )(  ";
+		$ar[] = "(__)(__)(____/ (____/ (_) (_)(_____)(___/ (__) ";
+		$ar[] = "                http://github.com/evaldobarbosa";
+
+		echo implode("\n", $ar);
+		echo "\n_______________________________________________\n";
+
+		unset($ar);
+	}
+
 	function setIP($value) {
 		$this->ip = $value;
 	}
@@ -32,6 +46,16 @@ class AddHost {
 	}
 
 	function setFolder($value) {
+		if ( substr($value,0,7) == "__PRJ__" ) {
+			if ( defined("DEFAULT_PRJ_PATH") ) {
+				$value = str_replace("__PRJ__", DEFAULT_PRJ_PATH, $value);
+				echo "new folder path: {$value}";
+			} else {
+				$this->rollback['folder'] = true;
+				$this->log['default_folder'] = $this->lang['folder']['folder_def_not_defined'];
+				return false;
+			}
+		}
 		$this->folder = $value;
 	}
 
