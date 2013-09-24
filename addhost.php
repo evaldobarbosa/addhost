@@ -4,10 +4,8 @@ require("addhost.class.php");
 
 $lang = require( strtolower( LANGUAGE ) . '.lang.php' );
 
-echo $lang[ 'project_name' ], "\n";
-echo "by: EVALDO BARBOSA\n";
-
 $addhost = new AddHost( $argv[1], $argv[2] );
+	$addhost->writeConsoleHeader();
 
 if ( in_array( '--removehost', $argv ) ) {
 	
