@@ -9,6 +9,7 @@ class AddHost {
 	private $htaccessCreation = false;
 	private $composerDownload = false;
 	private $createErrorLog = false;
+	private $isCName = false;
 	private $log = array();
 	private $rollback = array();
 	private $lang = array();
@@ -50,6 +51,10 @@ class AddHost {
 		$this->createErrorLog = $value;
 	}
 
+	function setCNameOn($value) {
+		$this->isCName = $value;
+	}
+
 	private function createVHost() {
 		$filename = APACHE_VHOST_PATH . "/" . strtolower($this->hostname) . ".conf";
 		if ( file_exists($filename) ) {
@@ -58,10 +63,14 @@ class AddHost {
 
 		$this->log['vhost'] = $this->lang['vhost_config'];
 
+		$myIp = ( !$this->isCName )
+			? $this->ip
+			: '*';
+
 		$vhc = array(); //virtual_host_content
 		$vhc[] = "### {$this->lang['created_by']} ADDHOST: " . date("Y-m-d H:i:s") . "###";
-		$vhc[] = "NameVirtualHost {$this->ip}:80";
-		$vhc[] = "<VirtualHost {$this->ip}:80>";
+		$vhc[] = "NameVirtualHost {$myIp}:80";
+		$vhc[] = "<VirtualHost {$myIp}:80>";
 		$vhc[] = "\tServerAdmin hostmaster@{$this->hostname}";
 		$vhc[] = "\tServerName {$this->hostname}";
 		$vhc[] = "\tDocumentRoot {$this->getPublicFolder()}";
@@ -209,9 +218,9 @@ class AddHost {
 
 		$contents = array();
 		$contents[] = '{';
-		$contents[] = '	"name": "' . $this->folder . '/' . $this->folder;
-		$contents[] = '	"description": "Type your description to ' . $this->folder;
-		$contents[] = '	"license": "LGPL-3.0+"';
+		$contents[] = '	"name": "' . CURRENT_USER . '/' . $this->hostname . '",';
+		$contents[] = '	"description": "Type your description to ' . $this->folder . '",';
+		$contents[] = '	"license": "LGPL-3.0+",';
     	$contents[] = '	"require-dev": {';
         $contents[] = '		"phpunit/phpunit": "@stable"';
     	$contents[] = '	},';
@@ -223,7 +232,7 @@ class AddHost {
 		$contents[] = '		"psr-0": {';
 		$contents[] = '			"": "src"';
 		$contents[] = '		}';
-		$contents[] = '	}';
+		$contents[] = '	},';
 		$contents[] = '	"authors": [';
         $contents[] = '		{';
         $contents[] = '			"name": "' . $developerName . '",';
@@ -253,9 +262,15 @@ class AddHost {
 
 	function run() {
 		try {
-			$this->validateIP();
+			if ( !$this->isCName ) {
+				$this->validateIP();
+			}
 			$this->createVHost();
-			$this->appendHostName();
+
+			if ( !$this->isCName ) {
+				$this->appendHostName();
+			}
+
 			$this->createFolder();
 
 			if ( $this->htaccessCreation ) {
@@ -266,11 +281,13 @@ class AddHost {
 				$this->downloadComposer();
 			}
 
-			$filename = dirname( __FILE__ ). "/hosts.temp";
-			if ( file_exists($filename) ) {
-				copy( $filename, HOSTS_FILE );
-				unlink( $filename );
-				echo $this->lang['copy_file'], "\n";
+			if ( !$this->isCName ) {
+				$filename = dirname( __FILE__ ). "/hosts.temp";
+				if ( file_exists($filename) ) {
+					copy( $filename, HOSTS_FILE );
+					unlink( $filename );
+					echo $this->lang['copy_file'], "\n";
+				}
 			}
 
 			return array("success"=>$this->log);
