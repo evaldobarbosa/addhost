@@ -43,6 +43,7 @@ return array(
 	'folder_not_found' => 'Projektordner nicht gefunden',
 	'folder_remove_error' => 'Fehler beim Entfernen des Projektordners',
 	'folder_remove_manually' => 'Der Projektornder muss manuell entfernt werden',
+	'folder_def_not_defined'	=> 'Projekt Default Ordner wurde nicht definiert',
 
 	'htaccess_label' => 'HTACCESS KONFUGURATION',
 	'htaccess_create_error' => 'Fehler beim Erstellen der .htaccess-Datei',
