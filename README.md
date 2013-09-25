@@ -47,5 +47,6 @@ Restart apache.
 
 Article (brazilian portuguese)
 ---
-PHP-DF.org - http://bit.ly/19zPh3A
-iMasters - http://bit.ly/1aYFFjz
+> PHP-DF.org - http://bit.ly/19zPh3A
+
+> iMasters - http://bit.ly/1aYFFjz
