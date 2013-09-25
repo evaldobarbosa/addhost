@@ -21,7 +21,7 @@ or
 First addhost verifies if the project source folder exists, if not it is created. After that addhost
 opens the /etc/hosts file and appends the IP and DOMAIN. Finally the virtual host config file is creates in the apache enabled sites folder.
 
-#### I want to configure something. What is possible?
+#### I want to configure something. How I do?
 
 * With --htaccess option automatically creates the .htaccess in your public folder.
 * With --composer addhost downloads composer.phar file and creates a project composer.json.
